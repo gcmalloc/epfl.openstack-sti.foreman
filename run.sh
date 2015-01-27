@@ -52,5 +52,8 @@ foreman-installer \
   --foreman-proxy-dns-forwarders=128.178.15.227 \
   --foreman-proxy-foreman-base-url=https://ostest1.epfl.ch
 
-# TODO: somehow set up --foreman-proxy-oauth-consumer-key and
-#                      --foreman-proxy-oauth-consumer-secret
+# TODO: it seems that --foreman-proxy-oauth-consumer-key and
+# --foreman-proxy-oauth-consumer-secret are being automagically set
+# up? (the current default value on ostest1.epfl.ch turns up nothing
+# on Google, suggesting that it is indeed random.) Double check next
+# time we bootstrap a master.
