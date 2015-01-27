@@ -28,12 +28,14 @@ which foreman-installer || {
 # The : ${foo:=bar} mantra keeps foo from the environment, with bar as
 # the default value.
 : ${OPENSTACK_STIIT_INTERNAL_IFACE:=eth1}
+: ${OPENSTACK_STIIT_MASTER_HOSTNAME:="$(hostname --short)"}
 # TODO: ask user with sane defaults from parsing ifconfig or something.
 : ${OPENSTACK_STIIT_IPADDRESS=192.168.10.1}
 : ${OPENSTACK_STIIT_DHCP_RANGE="192.168.10.32 192.168.10.127"}
 : ${OPENSTACK_STIIT_CLUSTER_DOMAIN=epfl.ch}
+: ${OPENSTACK_STIIT_MASTER_FQDN="${OPENSTACK_STIIT_MASTER_HOSTNAME}.${OPENSTACK_STIIT_CLUSTER_DOMAIN}"}
 
-foreman-installer \
+test -z "${OPENSTACK_STIIT_SKIP_FOREMAN_INSTALLER}" && foreman-installer \
   --enable-foreman-plugin-discovery \
   --foreman-plugin-discovery-install-images=true \
   --enable-foreman-proxy \
@@ -50,10 +52,15 @@ foreman-installer \
   --foreman-proxy-dns-reverse=10.168.192.in-addr.arpa \
   --foreman-proxy-dns-forwarders=128.178.15.228 \
   --foreman-proxy-dns-forwarders=128.178.15.227 \
-  --foreman-proxy-foreman-base-url=https://ostest1.epfl.ch
+  --foreman-proxy-foreman-base-url=https://"$OPENSTACK_STIIT_MASTER_FQDN"
 
-# TODO: it seems that --foreman-proxy-oauth-consumer-key and
-# --foreman-proxy-oauth-consumer-secret are being automagically set
-# up? (the current default value on ostest1.epfl.ch turns up nothing
-# on Google, suggesting that it is indeed random.) Double check next
-# time we bootstrap a master.
+# TODO: this should clearly be done from Puppet.
+tftpboot_fdi_dir=/var/lib/tftpboot/boot
+fdi_image="$tftpboot_fdi_dir"/fdi-image-latest.tar
+test -f "$fdi_image" || wget -O "$fdi_image" \
+  http://downloads.theforeman.org/discovery/releases/latest/fdi-image-latest.tar
+
+test -d "$tftpboot_fdi_dir"/fdi-image || \
+  tar --overwrite -C"$tftpboot_fdi_dir" -xf "$fdi_image"
+
+echo "All done."
