@@ -1,7 +1,11 @@
 #!/bin/sh
 
 # Usage:
-# wget -O - https://raw.githubusercontent.com/domq/epfl.openstack-sti.foreman/master/run.sh  | bash
+#   wget -O /tmp/run.sh https://raw.githubusercontent.com/domq/epfl.openstack-sti.foreman/master/run.sh
+#   OPENSTACK_STIIT_INTERNAL_IFACE=eth1 bash /tmp/run.sh
+#
+# One unfortunately *cannot* just pipe wget into bash, because
+# foreman-installer wants a tty :(
 #
 # Please keep this script:
 #  * repeatable: it should be okay to run it twice
@@ -50,6 +54,3 @@ foreman-installer \
 
 # TODO: somehow set up --foreman-proxy-oauth-consumer-key and
 #                      --foreman-proxy-oauth-consumer-secret
-
-set
-echo "Congratulations!!!!!!!!"
